@@ -9,9 +9,10 @@ const render = require('koa-send');
 // =======================
 const app = new Koa();
 const config = require('./config');
+const db = require('mongoose').connect(config.db, { useMongoClient: true });
 const middlewares = require('./middlewares')();
 
-const models = require('./models');
+const models = require('./models')(db);
 const controllers = require('./controllers')(models, render);
 const { combinedRoutes } = require('./routes')({controllers, middlewares, router});
 
@@ -36,20 +37,6 @@ const { io, server } = require('./io')(app);
 // =======================
 // END setting up app ====
 // =======================
-
-// TODO: remove this block post development
-io.on('connection', (socket) => {
-  console.log('a user connected');
-
-  socket.on('chat message', (msg) => {
-    console.log('message received', msg);
-    io.emit('chat message', msg);
-  })
-
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-});
 
 // =======================
 // start the server ======

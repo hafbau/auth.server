@@ -1,9 +1,9 @@
 /* @params: controller object, middlewares and router
 ** @returns the router, with the routes attached
 */
-module.exports = ({ controllers: { root }, router }) => {
+module.exports = ({ controllers: { root }, middlewares: { ensureUser }, router }) => {
   router
-    .get('/', root.getRoot)
+    .get('/', ensureUser, root.getRoot)
 
     return router;
 }

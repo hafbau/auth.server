@@ -3,11 +3,8 @@ const tokenSecret = require('../config').tokenSecret;
 
 module.exports = ({ User }, render) => {
   return {
-    getLogin: async (ctx) => {
-      ctx.body = '<h1>Login Page</h1>'
-    },
 
-    getLogout: async (ctx) => {
+    postLogout: async (ctx) => {
       if (ctx.user) {
         ctx.user.lastActive = Date.now();
         ctx.user.loggedIn = false;
@@ -27,13 +24,9 @@ module.exports = ({ User }, render) => {
       }
     },
 
-    getRegister: async (ctx) => {
-      ctx.body = User.find();
-    },
-
     postLogin: async (ctx) => {
-      const { request: { body }, res } = ctx;
-      const user = User.authenticate(body);
+      const { request: { body } } = ctx;
+      const user = await User.authenticate(body);
 
       if (user) {
         const token = jwt.sign({
@@ -57,8 +50,8 @@ module.exports = ({ User }, render) => {
     },
 
     postRegister: async (ctx) => {
-      const { request: { body }, res } = ctx;
-      const user = User.create(body);
+      const { request: { body } } = ctx;
+      const user = await User.create(body);
 
       if (user) {
         const token = jwt.sign({
