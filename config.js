@@ -1,6 +1,9 @@
 module.exports = {
 
     'tokenSecret': 'ilovemesecreet',
-    'database': 'mongodb://localhost:27017'
+    'db': {
+        'development': 'mongodb://localhost:27017/authServer',
+        'test': 'mongodb://localhost:27017/authServerTest'
+    }[process.env.NODE_ENV || 'development']
 
 };

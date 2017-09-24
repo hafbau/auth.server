@@ -3,8 +3,8 @@ module.exports = function(db) {
   const Schema = db.Schema;
 
   const UserSchema = new Schema({
-    email: String,
-    password: String,
+    email: { type: String,  required: true },
+    password: { type: String, required: true },
     meta: {}
   })
 

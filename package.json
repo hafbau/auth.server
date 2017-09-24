@@ -5,8 +5,8 @@
   "main": "serverModule.js",
   "scripts": {
     "debug": "node inspect index.js",
-    "start": "nodemon index.js",
-    "test": "tap tests/*/*_test.js '--cov'"
+    "start": "node index.js",
+    "test": "export NODE_ENV=test && tap tests/*/*_test.js -R spec"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +17,7 @@
     "koa": "^2.3.0",
     "koa-body": "^2.3.0",
     "koa-router": "^7.2.1",
-    "mongoose": "^4.11.1",
+    "mongoose": "^4.11.12",
     "morgan": "^1.8.2",
     "socket.io": "^2.0.3"
   },
