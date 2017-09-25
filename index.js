@@ -9,9 +9,9 @@ const render = require('koa-send');
 // =======================
 const app = new Koa();
 const config = require('./config');
-const db = require('mongoose').connect(config.db, { useMongoClient: true });
+const db = require('mongoose');
+db.connect(config.db, { useMongoClient: true });
 const middlewares = require('./middlewares')();
-
 const models = require('./models')(db);
 const controllers = require('./controllers')(models, render);
 const { combinedRoutes } = require('./routes')({controllers, middlewares, router});

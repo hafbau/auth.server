@@ -4,7 +4,7 @@
 module.exports = ({ controllers: { auth }, middlewares: { ensureUser }, router }) => {
   router
 
-    .post('/logout', ensureUser, auth.getLogout)
+    .post('/logout', ensureUser, auth.postLogout)
 
     .post('/login', auth.postLogin)
 
