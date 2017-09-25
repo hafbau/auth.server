@@ -10,3 +10,6 @@ node_modules
 .nyc_*
 
 coverage
+
+// log files
+*.log
