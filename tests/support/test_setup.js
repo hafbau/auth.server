@@ -4,19 +4,20 @@ const config = require('../../config');
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 
-module.exports = (function() {
+module.exports = function(db) {
+    if (!db) db = mongoose;
     require('tap').mochaGlobals();
 
     beforeEach(function (done) {
         function clearDB() {
-            for (let i in mongoose.connection.collections) {
-                mongoose.connection.collections[i].remove(function () { });
+            for (let i in db.connection.collections) {
+                db.connection.collections[i].remove(function () { });
             }
             return done();
         }
 
-        if (mongoose.connection.readyState === 0) {// not connected
-            mongoose.connect(config.db, { useMongoClient: true }, function (err) {
+        if (db.connection.readyState === 0) {// not connected
+            db.connect(config.db, { useMongoClient: true }, function (err) {
                 if (err) {
                     throw err;
                 }
@@ -28,9 +29,9 @@ module.exports = (function() {
     });
 
     afterEach(function (done) {
-        mongoose.disconnect();
+        db.disconnect();
         return done();
     });
 
-    return mongoose;
-})();
+    return db;
+};

@@ -8,7 +8,7 @@ module.exports = ({ User }, render) => {
       if (ctx.user) {
         ctx.user.lastActive = Date.now();
         ctx.user.loggedIn = false;
-        User.save(ctx.user);
+        ctx.user.save();
 
         ctx.status = 200;
         return ctx.body = {
@@ -25,8 +25,10 @@ module.exports = ({ User }, render) => {
     },
 
     postLogin: async (ctx) => {
-      const { request: { body } } = ctx;
-      const user = await User.authenticate(body);
+      const { request: { body: { fields } } } = ctx;
+      let data = fields ? fields : ctx.request.body;
+      if (typeof data === 'string') data = JSON.parse(data)
+      const user = await User.authenticate(data);
 
       if (user) {
         const token = jwt.sign({
@@ -50,9 +52,12 @@ module.exports = ({ User }, render) => {
     },
 
     postRegister: async (ctx) => {
-      const { request: { body } } = ctx;
-      const user = await User.create(body);
-
+      const { request: { body: { fields } } } = ctx;
+      let data = fields ? fields : ctx.request.body;
+      // this due to non-form data
+      if (typeof data === 'string') data = JSON.parse(data)    
+      const user = await User.create(data);
+      
       if (user) {
         const token = jwt.sign({
           userId: user._id,
@@ -67,7 +72,7 @@ module.exports = ({ User }, render) => {
           user
         };
       }
-      ctx.status = 403;
+      ctx.status = 400;
       return ctx.body = {
         success: false,
         message: 'User registration failed'

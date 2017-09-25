@@ -15,30 +15,36 @@ module.exports = function(db) {
     email: { type: String,  required: true, unique: true },
     password: { type: String, required: true },
     meta: {},
-    loggedIn: { type: Boolean, default: false },
+    loggedIn: { type: Boolean, default: true },
     lastActive: { type: Date },
     createdAt: { type: Date, required: true, default: Date.now() },
     updatedAt: { type: Date, required: true, default: Date.now() },
   });
 
   // hooks
-  UserSchema.pre('save', (next) => {
-    if (!this.createdAt) this.createdAt = Date.now();
+  UserSchema.pre('save', async function(next) {
     if (!this.updatedAt) this.updatedAt = Date.now();
-    next();
+    if (this.password) {
+      const salt = bcrypt.genSaltSync(10);
+      this.password = await bcrypt.hash(this.password, salt)
+    }
+    // Pass control to the next
+    return next();
   });
 
+  // set up a db model and pass it using module.exports
+  const User = db.model('User', UserSchema);
   // custom helpers
-  UserSchema.authenticate = ({ email, password }) => {
+  User.authenticate = ({ email, password }) => {
     return new Promise((resolve, reject) => {
-      UserSchema.findOne({ where: { email } }, (err, user) => {
+      console.log('weird')
+      User.findOne({ email }, (err, user) => {
         if (err) return reject(err);
         if (!user) return reject({ message: "User not found" });
         bcrypt.compare(password, user.password)
-          .then(matched => matched ? resolve(user) : reject({ message: "Password mismatch" }));
+        .then(matched => matched ? resolve(user) : reject({ message: "Password mismatch" }));
       });
     });
   };
-  // set up a db model and pass it using module.exports
-  return db.model('User', UserSchema);  
+  return User 
 };

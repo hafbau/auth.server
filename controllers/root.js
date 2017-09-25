@@ -6,18 +6,19 @@ module.exports = ({ User }, render) => {
     getRoot: async (ctx, next) => {
       const { req, res, user } = ctx;
       if (user) {
+        ctx.status = 200;
         ctx.body = {
           user,
           loggedIn: true
         }
       } else {
+        ctx.status = 403;
         ctx.body = {
           loggedIn: false
         }
       }
 
-      ctx.status = 200;
-      return next();
+      // return next();
     },
 
   }

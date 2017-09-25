@@ -5,8 +5,10 @@
   "main": "serverModule.js",
   "scripts": {
     "debug": "node inspect index.js",
-    "start": "node index.js",
-    "test": "export NODE_ENV=test && tap tests/*/*_test.js -R spec"
+    "start": "nodemon index.js",
+    "test": "export NODE_ENV=test && tap tests/*/*_test.js -R spec",
+    "test-unit": "export NODE_ENV=test && tap tests/unit/*_test.js -R spec",
+    "test-api": "export NODE_ENV=test && tap tests/integration/*_test.js -R spec"
   },
   "keywords": [],
   "author": "",
@@ -17,14 +19,15 @@
     "jsonwebtoken": "^7.4.1",
     "koa": "^2.3.0",
     "koa-body": "^2.3.0",
+    "koa-helmet": "^3.2.0",
+    "koa-morgan": "^1.0.1",
     "koa-router": "^7.2.1",
     "mongoose": "^4.11.12",
-    "morgan": "^1.8.2",
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
     "koa-send": "^4.1.0",
-    "nodemon": "^1.11.0",
+    "nodemon": "^1.12.1",
     "should": "^13.1.0",
     "supertest": "^3.0.0",
     "tap": "^10.7.2"

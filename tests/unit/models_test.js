@@ -1,4 +1,4 @@
 'use strict'
-const mongoose = require('../support/test_setup');
+const db = require('../support/test_setup')();
 
-require('../../models/test/user_model_test')(mongoose);
+require('../../models/test/user_model_test')(db);
