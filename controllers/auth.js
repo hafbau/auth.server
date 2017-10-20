@@ -25,58 +25,78 @@ module.exports = ({ User }, render) => {
     },
 
     postLogin: async (ctx) => {
-      const { request: { body: { fields } } } = ctx;
-      let data = fields ? fields : ctx.request.body;
-      if (typeof data === 'string') data = JSON.parse(data)
-      const user = await User.authenticate(data);
+      try {
+        const { request: { body: { fields } } } = ctx;
+        let data = fields ? fields : ctx.request.body;
+        if (typeof data === 'string') data = JSON.parse(data)
+        const user = await User.authenticate(data);
 
-      if (user) {
-        const token = jwt.sign({
-          userId: user._id,
-          lastActive: user.lastActive },
-          tokenSecret
-        );
-        ctx.status = 200;
+        if (user) {
+          const token = jwt.sign({
+            userId: user._id,
+            lastActive: user.lastActive },
+            tokenSecret
+          );
+          ctx.status = 200;
+          const meta = user.meta;
+          delete user.meta;
 
-        return ctx.body = {
-          success: true,
-          token,
-          user
-        };
+          return ctx.body = {
+            success: true,
+            token,
+            user: Object.assign({}, user, meta)
+          };
+        }
+        // no user
+        throw new Error();
       }
-      ctx.status = 403;
-      return ctx.body = {
-        success: false,
-        message: 'User authentication failed'
-      };
+      catch(err) {
+        ctx.status = 403;
+        return ctx.body = {
+          success: false,
+          message: 'User authentication failed',
+          fullMessage: err.message
+        };
+
+      }
     },
 
     postRegister: async (ctx) => {
-      const { request: { body: { fields } } } = ctx;
-      let data = fields ? fields : ctx.request.body;
-      // this due to non-form data
-      if (typeof data === 'string') data = JSON.parse(data)    
-      const user = await User.create(data);
-      
-      if (user) {
-        const token = jwt.sign({
-          userId: user._id,
-          lastActive: user.lastActive },
-          tokenSecret
-        );
-        ctx.status = 200;
+      try {
+        const { request: { body: { fields } } } = ctx;
+        let data = fields ? fields : ctx.request.body;
+        // this due to non-form data
+        if (typeof data === 'string') data = JSON.parse(data)    
+        const user = await User.create(data);
+        
+        if (user) {
+          const token = jwt.sign({
+            userId: user._id,
+            lastActive: user.lastActive },
+            tokenSecret
+          );
+          ctx.status = 200;
+          const meta = user.meta;
+          delete user.meta;
 
-        return ctx.body = {
-          success: true,
-          token,
-          user
-        };
+          return ctx.body = {
+            success: true,
+            token,
+            user: Object.assign({}, user, meta)
+          };
+        }
+        // no user
+        throw new Error();
       }
-      ctx.status = 400;
-      return ctx.body = {
-        success: false,
-        message: 'User registration failed'
-      };
+      catch (err) {
+        ctx.status = 400;
+        return ctx.body = {
+          success: false,
+          message: 'User registration failed',
+          fullMessage: err.message
+        };
+
+      }
     }
   }
 }
