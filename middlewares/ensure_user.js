@@ -4,7 +4,7 @@ const tokenSecret = require('../config').tokenSecret;
 module.exports = ({ User }) => async (ctx, next) => {
   ctx.body = ctx.body || {}
   const token = ctx.body.token || ctx.query.token || ctx.headers['x-access-token'];
-  console.log('token in middleware', token)
+  console.log('token in middleware', ctx.body)
   try {
     // jsonwebtoken should throw if can't verify https://github.com/auth0/node-jsonwebtoken
     const decoded = jwt.verify(token, tokenSecret);
