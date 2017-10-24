@@ -29,7 +29,7 @@ module.exports = ({ User }, render) => {
         const { request: { body: { fields } } } = ctx;
         let data = fields ? fields : ctx.request.body;
         if (typeof data === 'string') data = JSON.parse(data)
-        const user = await User.authenticate(data);
+        let user = await User.authenticate(data);
 
         if (user) {
           const token = jwt.sign({
@@ -40,11 +40,15 @@ module.exports = ({ User }, render) => {
           ctx.status = 200;
           const meta = user.meta;
           delete user.meta;
+          delete meta.password;
+          user = Object.assign({}, user, meta)
+          
+          console.log('user is', user)
 
           return ctx.body = {
             success: true,
             token,
-            user: Object.assign({}, user, meta)
+            user
           };
         }
         // no user
@@ -78,6 +82,7 @@ module.exports = ({ User }, render) => {
           ctx.status = 200;
           const meta = user.meta;
           delete user.meta;
+          delete meta.password;
 
           return ctx.body = {
             success: true,
