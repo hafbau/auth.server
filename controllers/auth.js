@@ -5,7 +5,9 @@ module.exports = ({ User }, render) => {
   return {
 
     postLogout: async (ctx) => {
+      console.log('in post logout')
       if (ctx.user) {
+        console.log('logout has user')
         ctx.user.lastActive = Date.now();
         ctx.user.loggedIn = false;
         ctx.user.save();
@@ -16,6 +18,7 @@ module.exports = ({ User }, render) => {
           loggedIn: false
         }
       }
+      console.log('no user in logout')
       ctx.status = 404;
       ctx.body = {
         success: false,
