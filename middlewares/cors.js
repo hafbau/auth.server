@@ -4,9 +4,9 @@ const whitelist = ['http://localhost:3001', 'http://192.168.1.64:8080', 'http://
 const corsOptions = {
     origin: (ctx) => {
         const requestOrigin = ctx.accept.headers.origin;
-        if (!whitelist.includes(requestOrigin)) {
-            return ctx.throw(`🙈 ${requestOrigin} is not a valid origin`);
-        }
+        // if (!whitelist.includes(requestOrigin)) {
+        //     return ctx.throw(`🙈 ${requestOrigin} is not a valid origin`);
+        // }
         return requestOrigin;
     }
 }

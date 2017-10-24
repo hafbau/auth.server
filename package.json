@@ -6,6 +6,7 @@
   "scripts": {
     "debug": "node inspect index.js",
     "start": "node index.js",
+    "prod-deploy": "pm2 deploy package.json production",
     "test": "export NODE_ENV=test && tap tests/*/*_test.js -R spec",
     "test-unit": "export NODE_ENV=test && tap tests/unit/*_test.js -R spec",
     "test-api": "export NODE_ENV=test && tap tests/integration/*_test.js -R spec"
