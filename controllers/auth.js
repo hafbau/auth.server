@@ -5,9 +5,7 @@ module.exports = ({ User }, render) => {
   return {
 
     postLogout: async (ctx) => {
-      console.log('in post logout')
       if (ctx.user) {
-        console.log('logout has user')
         ctx.user.lastActive = Date.now();
         ctx.user.loggedIn = false;
         ctx.user.save();
@@ -18,7 +16,6 @@ module.exports = ({ User }, render) => {
           loggedIn: false
         }
       }
-      console.log('no user in logout')
       ctx.status = 404;
       ctx.body = {
         success: false,
@@ -42,11 +39,12 @@ module.exports = ({ User }, render) => {
           );
           ctx.status = 200;
           const meta = user.meta;
+          
           delete user.meta;
           delete meta.password;
-          user = Object.assign({}, user, meta)
+          user = Object.assign({}, user._doc, meta)
           
-          console.log('user is', user)
+          console.log('user logged in', user)
 
           return ctx.body = {
             success: true,
@@ -75,7 +73,7 @@ module.exports = ({ User }, render) => {
         // this due to non-form data
         if (typeof data === 'string') data = JSON.parse(data)    
         const user = await User.create(data);
-        
+        console.log('user in postRegister', user)
         if (user) {
           const token = jwt.sign({
             userId: user._id,
@@ -90,7 +88,7 @@ module.exports = ({ User }, render) => {
           return ctx.body = {
             success: true,
             token,
-            user: Object.assign({}, user, meta)
+            user: Object.assign({}, user._doc, meta)
           };
         }
         // no user
