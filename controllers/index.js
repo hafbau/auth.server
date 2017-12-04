@@ -1,8 +1,4 @@
-const { getExports } = require('../utils');
-
-module.exports = (models, render) => {
-  return getExports({
-    dir: __dirname,
-    currentFile: __filename
-  }, models, render)
-}
+module.exports = (models, render) => ({
+  auth: require('./auth')(models, render),
+  root: require('./root')(models, render),
+})

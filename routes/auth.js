@@ -8,7 +8,9 @@ module.exports = ({ controllers: { auth }, middlewares: { ensureUser }, router }
 
     .post('/login', auth.postLogin)
 
-    .post('/register', auth.postRegister)
+    .post('/users', auth.postRegister)
+
+    .put('/users/:id', auth.putUser)
 
   return router;
 }

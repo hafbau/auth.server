@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const tokenSecret = require('../config').tokenSecret;
+const helpers = require('./helpers');
 
 module.exports = ({ User }, render) => {
   return {
@@ -26,23 +28,24 @@ module.exports = ({ User }, render) => {
 
     postLogin: async (ctx) => {
       try {
-        const { request: { body: { fields } } } = ctx;
-        let data = fields ? fields : ctx.request.body;
-        if (typeof data === 'string') data = JSON.parse(data)
+        const data = helpers.getReqUserData(ctx);
         let user = await User.authenticate(data);
-
         if (user) {
+          // ensuring user is not a mongoose object
+          if (user._doc) user = user._doc;
+
           const token = jwt.sign({
             userId: user._id,
             lastActive: user.lastActive },
             tokenSecret
           );
+
           ctx.status = 200;
-          const meta = user.meta;
+          const meta = user.__meta_;
           
-          delete user.meta;
-          delete meta.password;
-          user = Object.assign({}, user._doc, meta)
+          delete user.__meta_;
+          delete user.password;
+          user = Object.assign({}, user, meta)
           
           console.log('user logged in', user)
 
@@ -68,27 +71,29 @@ module.exports = ({ User }, render) => {
 
     postRegister: async (ctx) => {
       try {
-        const { request: { body: { fields } } } = ctx;
-        let data = fields ? fields : ctx.request.body;
-        // this due to non-form data
-        if (typeof data === 'string') data = JSON.parse(data)    
-        const user = await User.create(data);
-        console.log('user in postRegister', user)
+        const data = helpers.getReqUserData(ctx);
+        let user = await User.create(data);
+        
         if (user) {
+          // ensuring user is not a mongoose object
+          if (user._doc) user = user._doc;
+
           const token = jwt.sign({
             userId: user._id,
             lastActive: user.lastActive },
             tokenSecret
           );
+          
           ctx.status = 200;
-          const meta = user.meta;
-          delete user.meta;
-          delete meta.password;
+          const meta = user.__meta_;
+          
+          delete user.__meta_;
+          delete user.password;
 
           return ctx.body = {
             success: true,
             token,
-            user: Object.assign({}, user._doc, meta)
+            user: Object.assign({}, user, meta)
           };
         }
         // no user
@@ -99,6 +104,44 @@ module.exports = ({ User }, render) => {
         return ctx.body = {
           success: false,
           message: 'User registration failed',
+          fullMessage: err.message
+        };
+
+      }
+    },
+
+    putUser: async (ctx) => {
+      try {
+        const data = helpers.getReqUserData(ctx);
+        let user = await User.findOneAndUpdate(
+            { _id: mongoose.Types.ObjectId(ctx.params.id) },
+            data,
+            { new: true }
+        );
+          
+        if (user) {
+            // ensuring user is not a mongoose object
+            if (user._doc) user = user._doc;
+            
+            ctx.status = 200;
+            const meta = user.__meta_;
+            
+            delete user.__meta_;
+            delete user.password;
+            
+            return ctx.body = {
+                success: true,
+                user: Object.assign({}, user, meta)
+            };
+        }
+        // no user
+        throw new Error();
+      }
+      catch (err) {
+        ctx.status = 400;
+        return ctx.body = {
+          success: false,
+          message: 'User update failed',
           fullMessage: err.message
         };
 

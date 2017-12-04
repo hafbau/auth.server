@@ -14,7 +14,7 @@ module.exports = function(db) {
   const UserSchema = new Schema({
     email: { type: String,  required: true, unique: true },
     password: { type: String, required: true },
-    meta: {},
+    __meta_: {},
     loggedIn: { type: Boolean, default: true },
     lastActive: { type: Date },
     createdAt: { type: Date, required: true, default: Date.now() },
@@ -37,8 +37,9 @@ module.exports = function(db) {
   // custom helpers
   User.authenticate = ({ email, password }) => {
     return new Promise((resolve, reject) => {
-      console.log('weird')
+
       User.findOne({ email }, (err, user) => {
+
         if (err) return reject(err);
         if (!user) return reject({ message: "User not found" });
         bcrypt.compare(password, user.password)
@@ -46,5 +47,6 @@ module.exports = function(db) {
       });
     });
   };
+
   return User 
 };
