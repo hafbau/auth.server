@@ -39,7 +39,6 @@ module.exports = function(db) {
     return new Promise((resolve, reject) => {
 
       User.findOne({ email }, (err, user) => {
-
         if (err) return reject(err);
         if (!user) return reject({ message: "User not found" });
         bcrypt.compare(password, user.password)

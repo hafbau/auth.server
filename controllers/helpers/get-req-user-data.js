@@ -14,13 +14,13 @@ module.exports = (ctx) => {
         __meta_
     } = data;
 
-    delete email;
-    delete password;
-    delete loggedIn;
-    delete lastActive;
-    delete createdAt;
-    delete updatedAt;
-    delete __meta_;
+    delete data.email;
+    delete data.password;
+    delete data.loggedIn;
+    delete data.lastActive;
+    delete data.createdAt;
+    delete data.updatedAt;
+    delete data.__meta_;
 
     __meta_ = Object.assign({}, __meta_, data);
     return { email, password, __meta_ };
