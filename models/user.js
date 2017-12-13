@@ -13,7 +13,7 @@ module.exports = function(db) {
 
   const UserSchema = new Schema({
     email: { type: String,  required: true, unique: true },
-    password: { type: String, required: true },
+    hash: { type: String },
     __meta_: {},
     loggedIn: { type: Boolean, default: true },
     lastActive: { type: Date },
@@ -24,9 +24,11 @@ module.exports = function(db) {
   // hooks
   UserSchema.pre('save', async function(next) {
     if (!this.updatedAt) this.updatedAt = Date.now();
-    if (this.password) {
+    if (this.password || this.__meta_.password) {
       const salt = bcrypt.genSaltSync(10);
-      this.password = await bcrypt.hash(this.password, salt)
+      this.hash = await bcrypt.hash(this.password || this.__meta_.password, salt);
+      delete this.password;
+      delete this.__meta_.password;
     }
     // Pass control to the next
     return next();
@@ -41,7 +43,7 @@ module.exports = function(db) {
       User.findOne({ email }, (err, user) => {
         if (err) return reject(err);
         if (!user) return reject({ message: "User not found" });
-        bcrypt.compare(password, user.password)
+        bcrypt.compare(password, user.hash)
         .then(matched => matched ? resolve(user) : reject({ message: "Password mismatch" }));
       });
     });

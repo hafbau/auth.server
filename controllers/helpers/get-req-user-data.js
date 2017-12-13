@@ -3,23 +3,24 @@ module.exports = (ctx) => {
     let data = fields ? fields : ctx.request.body;
     // this due to non-form data
     if (typeof data === 'string') data = JSON.parse(data);
-
     let {
-        email,
-        password,
-        loggedIn,
-        lastActive,
         createdAt,
+        email,
+        hash,
+        lastActive,
+        loggedIn,
+        password,
         updatedAt,
         __meta_
     } = data;
 
-    delete data.email;
-    delete data.password;
-    delete data.loggedIn;
-    delete data.lastActive;
     delete data.createdAt;
+    delete data.email;
+    delete data.hash;
+    delete data.lastActive;
+    delete data.loggedIn;
     delete data.updatedAt;
+    delete data.__v;
     delete data.__meta_;
 
     __meta_ = Object.assign({}, __meta_, data);

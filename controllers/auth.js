@@ -27,13 +27,12 @@ module.exports = ({ User }, render) => {
     },
 
     postLogin: async (ctx) => {
+      console.log('login', ctx.request.body)
       try {
         const data = helpers.getReqUserData(ctx);
-        console.log('user b4 auth', data)
         let user = await User.authenticate(data);
         if (user) {
           // ensuring user is not a mongoose object
-          console.log('user after auth', user)
           if (user._doc) user = user._doc;
 
           const token = jwt.sign({
@@ -44,13 +43,12 @@ module.exports = ({ User }, render) => {
 
           ctx.status = 200;
           const meta = user.__meta_;
+          delete meta.password;
           
           delete user.__meta_;
-          delete user.password;
+          delete user.hash;
           const trimedUser = Object.assign({}, user, meta)
           
-          console.log('user logged in', trimedUser)
-
           return ctx.body = {
             success: true,
             token,
@@ -89,8 +87,9 @@ module.exports = ({ User }, render) => {
           ctx.status = 200;
           const meta = user.__meta_;
           
+          delete meta.password;
           delete user.__meta_;
-          delete user.password;
+          delete user.hash;
 
           return ctx.body = {
             success: true,
@@ -127,9 +126,9 @@ module.exports = ({ User }, render) => {
             
             ctx.status = 200;
             const meta = user.__meta_;
-            
+            delete meta.password;
             delete user.__meta_;
-            delete user.password;
+            delete user.hash;
             
             return ctx.body = {
                 success: true,
