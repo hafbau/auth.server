@@ -3,6 +3,7 @@ module.exports = (ctx) => {
     let data = fields ? fields : ctx.request.body;
     // this due to non-form data
     if (typeof data === 'string') data = JSON.parse(data);
+    console.log('data in get req data', data)
     let {
         createdAt,
         email,

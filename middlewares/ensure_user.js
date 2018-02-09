@@ -10,7 +10,7 @@ module.exports = ({ User }) => async (ctx, next) => {
     const user = await User.findOne({ '_id': decoded.userId });
     if (!user) throw new Error('user not found');
   
-    if (user.lastActive != decoded.lastActive) throw new Error('stale user');
+    if (!ctx.path.includes('logout') && user.lastActive != decoded.lastActive) throw new Error('stale user');
     // this is a mongoose object not the _doc
     ctx.user = user;
     return next();

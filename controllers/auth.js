@@ -114,6 +114,7 @@ module.exports = ({ User }, render) => {
     putUser: async (ctx) => {
       try {
         const data = helpers.getReqUserData(ctx);
+        console.log('data in put', data)
         let user = await User.findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(ctx.params.id) },
             data,

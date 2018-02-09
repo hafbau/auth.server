@@ -50,7 +50,7 @@ const { io, server } = require('./io')(app);
 // start the server ======
 // =======================
 const PORT = 4001;
-server.listen(PORT, () => console.log(`listening on port ${PORT} on ${process.env.NODE_ENV} enviroment.`));
+if (!module.parent) server.listen(PORT, () => console.log(`listening on port ${PORT} on ${process.env.NODE_ENV} enviroment.`));
 
 module.exports = {
     server,
