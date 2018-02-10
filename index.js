@@ -53,6 +53,6 @@ const PORT = 4001;
 if (!module.parent) server.listen(PORT, () => console.log(`listening on port ${PORT} on ${process.env.NODE_ENV} enviroment.`));
 
 module.exports = {
-    server,
-    db
+    authserver: server,
+    authdb: db
 };
