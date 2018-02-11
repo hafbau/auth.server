@@ -33,8 +33,30 @@ app.use(middlewares.cors);
 
 // set up security, logging and body
 // app.use(helmet);
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(bodyParser({ multipart: true }));
+
+// middleware to log requests to the console.
+app.use(async (ctx, next) => {
+    const start = new Date();
+    await next();
+    const ms = new Date() - start;
+    console.log(`Auth Server => ${ctx.method} ${ctx.url} - ${ms}ms`);
+});
+
+//error handling middleware
+app.use(async (ctx, next) => {
+    try {
+        ctx.type = 'json';
+        await next();
+    } catch (err) {
+        console.log("Auth Server error handling", err.message)
+        ctx.status = err.status || 500;
+        ctx.body = {
+            error: err.message
+        };
+    }
+});
 
 // set up app routes
 app.use(combinedRoutes);
