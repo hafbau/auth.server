@@ -71,9 +71,12 @@ module.exports = ({ User }, render) => {
 
     postRegister: async (ctx) => {
       try {
-        const data = helpers.getReqUserData(ctx);
+        console.log('got to sign up', ctx.request.body)
+        console.log('got to sign up with req', ctx.req.body)
+        const data = helpers.getReqUsserData(ctx);
+        console.log('data after get reqdata', data)
         let user = await User.create(data);
-        
+        console.log('usr created', user)
         if (user) {
           // ensuring user is not a mongoose object
           if (user._doc) user = user._doc;
@@ -114,7 +117,6 @@ module.exports = ({ User }, render) => {
     putUser: async (ctx) => {
       try {
         const data = helpers.getReqUserData(ctx);
-        console.log('data in put', data)
         let user = await User.findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(ctx.params.id) },
             data,
